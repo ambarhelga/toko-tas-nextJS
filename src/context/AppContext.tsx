@@ -1,0 +1,169 @@
+"use client";
+
+import type { ReactNode } from 'react';
+import { createContext, useState, useEffect } from 'react';
+import type { Bag, CartItem, User } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+
+interface AppContextType {
+  user: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+  cart: CartItem[];
+  addToCart: (bag: Bag) => void;
+  removeFromCart: (bagId: string) => void;
+  updateQuantity: (bagId: string, quantity: number) => void;
+  clearCart: () => void;
+  cartTotal: number;
+  wishlist: Bag[];
+  addToWishlist: (bag: Bag) => void;
+  removeFromWishlist: (bagId: string) => void;
+  isInWishlist: (bagId: string) => boolean;
+  browsingHistory: string[];
+  addToHistory: (bagId: string) => void;
+}
+
+export const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<Bag[]>([]);
+  const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedCart = localStorage.getItem('cart');
+      if (storedCart) setCart(JSON.parse(storedCart));
+      
+      const storedWishlist = localStorage.getItem('wishlist');
+      if (storedWishlist) setWishlist(JSON.parse(storedWishlist));
+
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) setUser(JSON.parse(storedUser));
+      
+      const storedHistory = localStorage.getItem('browsingHistory');
+      if (storedHistory) setBrowsingHistory(JSON.parse(storedHistory));
+
+    } catch (error) {
+      console.error("Failed to parse from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      localStorage.setItem('browsingHistory', JSON.stringify(browsingHistory));
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('user');
+      }
+    }
+  }, [cart, wishlist, user, browsingHistory, isMounted]);
+
+  const login = (userData: User) => {
+    setUser(userData);
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  const addToCart = (bag: Bag) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.bag.id === bag.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.bag.id === bag.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { bag, quantity: 1 }];
+    });
+    toast({ title: "Added to cart", description: `${bag.name} is now in your cart.` });
+  };
+
+  const removeFromCart = (bagId: string) => {
+    setCart((prevCart) => prevCart.filter((item) => item.bag.id !== bagId));
+  };
+  
+  const updateQuantity = (bagId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(bagId);
+    } else {
+      setCart((prevCart) =>
+        prevCart.map((item) =>
+          item.bag.id === bagId ? { ...item, quantity } : item
+        )
+      );
+    }
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  }
+
+  const cartTotal = cart.reduce(
+    (total, item) => total + item.bag.price * item.quantity,
+    0
+  );
+
+  const addToWishlist = (bag: Bag) => {
+    if (isInWishlist(bag.id)) {
+      removeFromWishlist(bag.id);
+      toast({ title: "Removed from wishlist", description: `${bag.name} has been removed from your wishlist.` });
+    } else {
+      setWishlist((prev) => [...prev, bag]);
+      toast({ title: "Added to wishlist", description: `${bag.name} is now in your wishlist.` });
+    }
+  };
+
+  const removeFromWishlist = (bagId: string) => {
+    setWishlist((prev) => prev.filter((item) => item.id !== bagId));
+  };
+
+  const isInWishlist = (bagId: string) => {
+    return wishlist.some((item) => item.id === bagId);
+  };
+  
+  const addToHistory = (bagId: string) => {
+    setBrowsingHistory(prev => {
+        const newHistory = [bagId, ...prev.filter(id => id !== bagId)];
+        return newHistory.slice(0, 10); // Keep last 10 viewed items
+    });
+  };
+
+  if (!isMounted) {
+    return null; // or a loading spinner
+  }
+
+  return (
+    <AppContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartTotal,
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
+        browsingHistory,
+        addToHistory,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+}

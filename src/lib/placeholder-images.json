@@ -1,3 +1,76 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "Elegant leather tote bag in black.",
+      "imageUrl": "https://images.unsplash.com/photo-1758499537503-315ca95c010b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsZWF0aGVyJTIwdG90ZXxlbnwwfHx8fDE3NTg2MjAwNDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather tote"
+    },
+    {
+      "id": "2",
+      "description": "Chic crossbody bag in a neutral beige.",
+      "imageUrl": "https://images.unsplash.com/photo-1709899629440-64da054379d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjcm9zc2JvZHklMjBiYWd8ZW58MHx8fHwxNzU4NjAyMDA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crossbody bag"
+    },
+    {
+      "id": "3",
+      "description": "Spacious canvas backpack for daily use.",
+      "imageUrl": "https://images.unsplash.com/photo-1754824164042-39a9104f974e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjYW52YXMlMjBiYWNrcGFja3xlbnwwfHx8fDE3NTg2MDE1MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "canvas backpack"
+    },
+    {
+      "id": "4",
+      "description": "Stylish clutch for evening events.",
+      "imageUrl": "https://images.unsplash.com/photo-1742626181959-f6442aea029b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxldmVuaW5nJTIwY2x1dGNofGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "evening clutch"
+    },
+    {
+      "id": "5",
+      "description": "Classic satchel bag in brown leather.",
+      "imageUrl": "https://images.unsplash.com/photo-1657603635372-023411921d31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsZWF0aGVyJTIwc2F0Y2hlbHxlbnwwfHx8fDE3NTg2MjAwNTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather satchel"
+    },
+    {
+      "id": "6",
+      "description": "Modern hobo bag with a relaxed silhouette.",
+      "imageUrl": "https://images.unsplash.com/photo-1671764673184-740ebf2cd637?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxob2JvJTIwYmFnfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hobo bag"
+    },
+    {
+      "id": "7",
+      "description": "Compact mini backpack for light travel.",
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtaW5pJTIwYmFja3BhY2t8ZW58MHx8fHwxNzU4NjIwMDQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mini backpack"
+    },
+    {
+      "id": "8",
+      "description": "Versatile shoulder bag with gold hardware.",
+      "imageUrl": "https://images.unsplash.com/photo-1526865619614-54b6ff17bb01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzaG91bGRlciUyMGJhZ3xlbnwwfHx8fDE3NTg2MTI2NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "shoulder bag"
+    },
+    {
+      "id": "9",
+      "description": "Sporty fanny pack for hands-free convenience.",
+      "imageUrl": "https://images.unsplash.com/photo-1671272980551-500bc76d336c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYW5ueSUyMHBhY2t8ZW58MHx8fHwxNzU4NjIwMDUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fanny pack"
+    },
+    {
+      "id": "10",
+      "description": "Structured top-handle bag in red.",
+      "imageUrl": "https://images.unsplash.com/photo-1601924921557-45e6dea0a157?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyZWQlMjBoYW5kYmFnfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "red handbag"
+    },
+    {
+      "id": "11",
+      "description": "Bohemian-style straw tote for summer.",
+      "imageUrl": "https://images.unsplash.com/photo-1596491075536-4914c10919ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RyYXclMjB0b3RlfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "straw tote"
+    },
+    {
+      "id": "12",
+      "description": "Professional laptop bag with multiple compartments.",
+      "imageUrl": "https://images.unsplash.com/photo-1510682469697-f2953374f076?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxsYXB0b3AlMjBiYWd8ZW58MHx8fHwxNzU4NTk0Nzc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop bag"
+    }
+  ]
 }

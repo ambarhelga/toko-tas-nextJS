@@ -1,14 +1,20 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
 import { createContext, useState, useEffect } from 'react';
 import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { auth } from '@/lib/firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+
 
 interface AppContextType {
   user: User | null;
   login: (user: User) => void;
   logout: () => void;
+  loginWithGoogle: () => void;
   cart: CartItem[];
   addToCart: (bag: Bag) => void;
   removeFromCart: (bagId: string) => void;
@@ -27,11 +33,32 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Bag[]>([]);
   const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const { uid, displayName, email } = firebaseUser;
+        const appUser: User = {
+          id: uid,
+          name: displayName || 'User',
+          email: email || '',
+        };
+        setUser(appUser);
+        localStorage.setItem('user', JSON.stringify(appUser));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     try {
@@ -40,9 +67,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       
       const storedWishlist = localStorage.getItem('wishlist');
       if (storedWishlist) setWishlist(JSON.parse(storedWishlist));
-
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) setUser(JSON.parse(storedUser));
       
       const storedHistory = localStorage.getItem('browsingHistory');
       if (storedHistory) setBrowsingHistory(JSON.parse(storedHistory));
@@ -58,20 +82,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('cart', JSON.stringify(cart));
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
       localStorage.setItem('browsingHistory', JSON.stringify(browsingHistory));
-      if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('user');
-      }
     }
-  }, [cart, wishlist, user, browsingHistory, isMounted]);
+  }, [cart, wishlist, browsingHistory, isMounted]);
 
   const login = (userData: User) => {
     setUser(userData);
   };
 
-  const logout = () => {
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { uid, displayName, email } = result.user;
+      const appUser: User = {
+        id: uid,
+        name: displayName || 'User',
+        email: email || '',
+      };
+      setUser(appUser);
+      toast({
+        title: 'Login Successful',
+        description: `Welcome back, ${appUser.name}!`,
+      });
+      router.push('/');
+    } catch (error) {
+      console.error("Error during Google sign-in:", error);
+      toast({
+        title: 'Login Failed',
+        description: 'Could not sign in with Google. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const logout = async () => {
+    await signOut(auth);
     setUser(null);
+    toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+    });
+    router.push('/login');
   };
 
   const addToCart = (bag: Bag) => {
@@ -149,6 +200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         user,
         login,
         logout,
+        loginWithGoogle,
         cart,
         addToCart,
         removeFromCart,

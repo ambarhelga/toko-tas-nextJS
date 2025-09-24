@@ -19,14 +19,9 @@ const firebaseConfig = {
   "messagingSenderId": "930421194670"
 };
 
-let app: FirebaseApp;
-let auth: Auth;
-
-if (typeof window !== 'undefined') {
-  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-  auth = getAuth(app);
-}
-
+// We will hold the auth instance in a state variable.
+// let app: FirebaseApp;
+// let auth: Auth;
 
 interface AppContextType {
   user: User | null;
@@ -57,29 +52,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<Bag[]>([]);
   const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [auth, setAuth] = useState<Auth | null>(null);
   const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
   
   useEffect(() => {
-    if (auth) {
-      setIsFirebaseInitialized(true);
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        if (firebaseUser) {
-          const { uid, displayName, email } = firebaseUser;
-          const appUser: User = {
-            id: uid,
-            name: displayName || 'User',
-            email: email || '',
-          };
-          setUser(appUser);
-          localStorage.setItem('user', JSON.stringify(appUser));
-        } else {
-          setUser(null);
-          localStorage.removeItem('user');
-        }
-      });
+    // This effect runs only once on the client after the component mounts.
+    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    const authInstance = getAuth(app);
+    setAuth(authInstance);
+    setIsFirebaseInitialized(true);
 
-      return () => unsubscribe();
-    }
+    const unsubscribe = onAuthStateChanged(authInstance, (firebaseUser) => {
+      if (firebaseUser) {
+        const { uid, displayName, email } = firebaseUser;
+        const appUser: User = {
+          id: uid,
+          name: displayName || 'User',
+          email: email || '',
+        };
+        setUser(appUser);
+        localStorage.setItem('user', JSON.stringify(appUser));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -112,7 +111,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
-    if (!isFirebaseInitialized) return;
+    if (!isFirebaseInitialized || !auth) return;
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -125,7 +124,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUser(appUser);
       toast({
         title: 'Login Successful',
-        description: `Welcome back, ${appUser.name}!`,
+        description: `Welcome back, ${'appUser.name'}!`,
       });
       router.push('/');
     } catch (error) {
@@ -139,7 +138,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    if (!isFirebaseInitialized) return;
+    if (!isFirebaseInitialized || !auth) return;
     await signOut(auth);
     setUser(null);
     toast({

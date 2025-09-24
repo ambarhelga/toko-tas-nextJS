@@ -6,8 +6,8 @@ import { createContext, useState, useEffect } from 'react';
 import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, type Auth } from 'firebase/auth';
 
 
 const firebaseConfig = {
@@ -19,8 +19,13 @@ const firebaseConfig = {
   "messagingSenderId": "930421194670"
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
+let app: FirebaseApp;
+let auth: Auth;
+
+if (typeof window !== 'undefined') {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+}
 
 
 interface AppContextType {
@@ -52,25 +57,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<Bag[]>([]);
   const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
   
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        const { uid, displayName, email } = firebaseUser;
-        const appUser: User = {
-          id: uid,
-          name: displayName || 'User',
-          email: email || '',
-        };
-        setUser(appUser);
-        localStorage.setItem('user', JSON.stringify(appUser));
-      } else {
-        setUser(null);
-        localStorage.removeItem('user');
-      }
-    });
+    if (auth) {
+      setIsFirebaseInitialized(true);
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          const { uid, displayName, email } = firebaseUser;
+          const appUser: User = {
+            id: uid,
+            name: displayName || 'User',
+            email: email || '',
+          };
+          setUser(appUser);
+          localStorage.setItem('user', JSON.stringify(appUser));
+        } else {
+          setUser(null);
+          localStorage.removeItem('user');
+        }
+      });
 
-    return () => unsubscribe();
+      return () => unsubscribe();
+    }
   }, []);
 
   useEffect(() => {
@@ -103,6 +112,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
+    if (!isFirebaseInitialized) return;
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -129,6 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (!isFirebaseInitialized) return;
     await signOut(auth);
     setUser(null);
     toast({

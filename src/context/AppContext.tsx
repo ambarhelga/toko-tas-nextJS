@@ -19,9 +19,17 @@ const firebaseConfig = {
   "messagingSenderId": "930421194670"
 };
 
-// We will hold the auth instance in a state variable.
-// let app: FirebaseApp;
-// let auth: Auth;
+// Initialize Firebase only in the browser
+let app: FirebaseApp;
+let auth: Auth;
+if (typeof window !== 'undefined' && !getApps().length) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+} else if (typeof window !== 'undefined') {
+  app = getApp();
+  auth = getAuth(app);
+}
+
 
 interface AppContextType {
   user: User | null;
@@ -52,17 +60,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<Bag[]>([]);
   const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
-  const [auth, setAuth] = useState<Auth | null>(null);
-  const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
   
   useEffect(() => {
     // This effect runs only once on the client after the component mounts.
-    const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    const authInstance = getAuth(app);
-    setAuth(authInstance);
-    setIsFirebaseInitialized(true);
-
-    const unsubscribe = onAuthStateChanged(authInstance, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const { uid, displayName, email } = firebaseUser;
         const appUser: User = {
@@ -111,7 +112,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
-    if (!isFirebaseInitialized || !auth) return;
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -138,7 +138,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    if (!isFirebaseInitialized || !auth) return;
     await signOut(auth);
     setUser(null);
     toast({

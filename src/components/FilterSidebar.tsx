@@ -25,7 +25,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
 
   useEffect(() => {
-    // Atur ulang rentang harga saat harga maksimum berubah (misalnya, saat produk berubah)
+    // Setel ulang rentang harga hanya saat produk benar-benar berubah, bukan pada setiap render.
     setPriceRange([0, maxPrice]);
   }, [maxPrice]);
   
@@ -39,6 +39,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
     onFilterChange(filtered);
   // Logika pemfilteran seharusnya hanya berjalan ulang ketika kriteria filter berubah.
   // `onFilterChange` dan `allBags` dikecualikan untuk mencegah loop tak terbatas.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTypes, selectedBrands, priceRange]);
 
 

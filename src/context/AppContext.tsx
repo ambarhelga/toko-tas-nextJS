@@ -137,14 +137,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
       let errorMessage = 'Could not log in with Google. Please try again.';
       
-      if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = 'Google Sign-In is not enabled for this app. Please contact the administrator.';
+      if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = 'This domain is not authorized for login. Check Firebase configuration.';
       } else if (error.code === 'auth/popup-blocked') {
         errorMessage = 'Login popup was blocked. Please allow popups for this site.';
       } else if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Login was canceled. Please complete the popup process to log in.';
-      } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for login. Check Firebase configuration.';
       }
   
       toast({

@@ -25,7 +25,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
 
   useEffect(() => {
-    // Set initial price range when maxPrice is calculated
+    // Atur ulang rentang harga saat harga maksimum berubah (misalnya, saat produk berubah)
     setPriceRange([0, maxPrice]);
   }, [maxPrice]);
   
@@ -37,9 +37,9 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
       return typeMatch && brandMatch && priceMatch;
     });
     onFilterChange(filtered);
-  // NOTE: `onFilterChange` and `allBags` are removed to prevent infinite loops.
-  // The filtering logic should only re-run when the filter criteria change.
-  }, [selectedTypes, selectedBrands, priceRange, onFilterChange, allBags]);
+  // Logika pemfilteran seharusnya hanya berjalan ulang ketika kriteria filter berubah.
+  // `onFilterChange` dan `allBags` dikecualikan untuk mencegah loop tak terbatas.
+  }, [selectedTypes, selectedBrands, priceRange]);
 
 
   const handleTypeChange = (type: string) => {

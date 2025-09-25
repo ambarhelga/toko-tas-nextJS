@@ -6,7 +6,7 @@ export interface Bag {
   imageUrl: string;
   imageHint: string;
   type: 'Tote' | 'Crossbody' | 'Backpack' | 'Clutch' | 'Satchel' | 'Hobo';
-  brand: 'ChicVogue' | 'LuxeCarry' | 'UrbanTote' | 'Eleganté';
+  brand: 'ChicVogue' | 'LuxeCarry' | 'UrbanTote' | 'Eleganté' | 'Les Catino';
 }
 
 export interface CartItem {

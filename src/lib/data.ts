@@ -124,6 +124,16 @@ export const bags: Bag[] = [
     type: 'Satchel',
     brand: 'Eleganté',
   },
+  {
+    id: '13',
+    name: 'Tary Satchel Bag',
+    price: 16.65,
+    description: ' Adjustable & Detachable Straps Solid Coloring',
+    imageUrl: getImage('13').imageUrl,
+    imageHint: getImage('13').imageHint,
+    type: 'Satchel',
+    brand: 'Les Catino',
+  },
 ];
 
 export const orders: Order[] = [

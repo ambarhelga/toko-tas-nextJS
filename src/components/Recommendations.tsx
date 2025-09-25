@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
 import { useAppContext } from '@/hooks/useAppContext';
 import { getRecommendations } from '@/app/actions';
-import { Skeleton } from './ui/skeleton';
+// import { Skeleton } from './ui/skeleton';
 import BagCard from './BagCard';
 import { Sparkles } from 'lucide-react';
 

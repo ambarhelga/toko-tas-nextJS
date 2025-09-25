@@ -39,7 +39,7 @@
     {
       "id": "7",
       "description": "Compact mini backpack for light travel.",
-      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtaW5pJTIwYmFja3BhY2t8ZW58MHx8fHwxNzU4NjIwMDQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtaW5pJTIwYmFja3BhY2t8ZW58MHx8fHwxNzU4NjIwMDQ5fDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "mini backpack"
     },
     {
@@ -57,20 +57,26 @@
     {
       "id": "10",
       "description": "Structured top-handle bag in red.",
-      "imageUrl": "https://images.unsplash.com/photo-1601924921557-45e6dea0a157?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyZWQlMjBoYW5kYmFnfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1601924921557-45e6dea0a157?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyZWQlMjBoYW5kYmFnfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "red handbag"
     },
     {
       "id": "11",
       "description": "Bohemian-style straw tote for summer.",
-      "imageUrl": "https://images.unsplash.com/photo-1596491075536-4914c10919ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RyYXclMjB0b3RlfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1596491075536-4914c10919ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RyYXclMjB0b3RlfGVufDB8fHx8MTc1ODYyMDA0OXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "straw tote"
     },
     {
       "id": "12",
       "description": "Professional laptop bag with multiple compartments.",
-      "imageUrl": "https://images.unsplash.com/photo-1510682469697-f2953374f076?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxsYXB0b3AlMjBiYWd8ZW58MHx8fHwxNzU4NTk0Nzc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1510682469697-f2953374f076?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxsYXB0b3AlMjBiYWd8ZW58MHx8fHwxNzU4NTk0Nzc2fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "laptop bag"
+    },
+    {
+      "id": "13",
+      "description": "Adjustable & Detachable Straps Solid Coloring",
+      "imageUrl": "https://images.unsplash.com/photo-1645276268873-1cc282b80708?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzbGluZyUyMGJhZ3xlbnwwfHx8fDE3NTg3ODQ5NzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sling bag"
     }
   ]
 }

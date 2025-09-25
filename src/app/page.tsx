@@ -1,4 +1,4 @@
-import { Bag, bags } from '@/lib/data';
+import { bags } from '@/lib/data';
 import ProductGrid from '@/components/ProductGrid';
 import Recommendations from '@/components/Recommendations';
 import Image from 'next/image';
@@ -32,7 +32,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Recommendations allBags={bags} />
+      {/* <Recommendations allBags={bags} /> */}
 
       <section id="products">
         <h2 className="mb-8 text-center font-headline text-3xl font-bold">

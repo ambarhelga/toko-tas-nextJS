@@ -62,6 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
+    if (!auth) return;
     // This effect runs only once on the client after the component mounts.
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
@@ -113,6 +114,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    // Add the current domain for development purposes.
+    provider.addScope('profile');
+    provider.addScope('email');
+    if (window.location.hostname !== 'localhost') {
+      provider.setCustomParameters({
+        hd: window.location.hostname
+      });
+    }
+
     try {
       const result = await signInWithPopup(auth, provider);
       const { uid, displayName, email } = result.user;
@@ -123,15 +133,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
       setUser(appUser);
       toast({
-        title: 'Login Successful',
-        description: `Welcome back, ${'appUser.name'}!`,
+        title: 'Login Berhasil',
+        description: `Selamat datang kembali, ${appUser.name}!`,
       });
       router.push('/');
     } catch (error) {
-      console.error("Error during Google sign-in:", error);
+      // Penanganan error yang lebih baik
+      console.error("Kode Error Firebase Auth:", error.code);
+      console.error("Error Lengkap:", error);
+  
+      let errorMessage = 'Tidak dapat login dengan Google. Silakan coba lagi.';
+      
+      if (error.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Login Google belum diaktifkan untuk aplikasi ini. Hubungi administrator.';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Popup login diblokir. Izinkan popup untuk situs ini.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Login dibatalkan. Silakan selesaikan proses popup untuk login.';
+      } else if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = 'Domain ini tidak diotorisasi untuk login. Periksa konfigurasi Firebase.';
+      }
+  
       toast({
-        title: 'Login Failed',
-        description: 'Could not sign in with Google. Please try again.',
+        title: 'Login Gagal',
+        description: errorMessage,
         variant: 'destructive',
       });
     }

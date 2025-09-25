@@ -33,7 +33,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
       return typeMatch && brandMatch && priceMatch;
     });
     onFilterChange(filtered);
-  }, [selectedTypes, selectedBrands, priceRange, allBags, onFilterChange]);
+  }, [selectedTypes, selectedBrands, priceRange]);
 
   const handleTypeChange = (type: string) => {
     setSelectedTypes(prev =>

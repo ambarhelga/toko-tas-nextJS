@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { Bag } from '@/lib/types';
 import BagCard from './BagCard';
 import FilterSidebar from './FilterSidebar';
@@ -15,11 +15,15 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
   const allBrands = [...new Set(bags.map(b => b.brand))];
   const allTypes = [...new Set(bags.map(b => b.type))];
 
+  const handleFilterChange = useCallback((newBags: Bag[]) => {
+    setFilteredBags(newBags);
+  }, []);
+
   return (
     <div className="flex flex-col gap-8 md:flex-row">
       <FilterSidebar
         allBags={bags}
-        onFilterChange={setFilteredBags}
+        onFilterChange={handleFilterChange}
         brands={allBrands}
         types={allTypes}
       />

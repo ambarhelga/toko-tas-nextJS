@@ -15,13 +15,17 @@ interface FilterSidebarProps {
 }
 
 const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebarProps) => {
+  const maxPrice = useMemo(() => {
+    if (allBags.length === 0) return 300;
+    return Math.ceil(Math.max(...allBags.map(b => b.price)))
+  }, [allBags]);
+
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
-
-  const maxPrice = useMemo(() => Math.ceil(Math.max(...allBags.map(b => b.price))), [allBags]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
 
   useEffect(() => {
+    // Set initial price range when maxPrice is calculated
     setPriceRange([0, maxPrice]);
   }, [maxPrice]);
   
@@ -33,7 +37,10 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
       return typeMatch && brandMatch && priceMatch;
     });
     onFilterChange(filtered);
-  }, [selectedTypes, selectedBrands, priceRange]);
+  // NOTE: `onFilterChange` and `allBags` are removed to prevent infinite loops.
+  // The filtering logic should only re-run when the filter criteria change.
+  }, [selectedTypes, selectedBrands, priceRange, onFilterChange, allBags]);
+
 
   const handleTypeChange = (type: string) => {
     setSelectedTypes(prev =>
@@ -101,7 +108,6 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
         <div>
             <h4 className="mb-4 font-semibold">Price Range</h4>
              <Slider
-                defaultValue={[0, maxPrice]}
                 max={maxPrice}
                 step={10}
                 value={priceRange}

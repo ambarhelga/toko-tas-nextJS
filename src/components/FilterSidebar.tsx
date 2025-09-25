@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -23,10 +24,12 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, maxPrice]);
 
   useEffect(() => {
-    // Setel ulang rentang harga hanya saat produk benar-benar berubah, bukan pada setiap render.
+    // Inisialisasi state harga ketika maxPrice berubah (misalnya saat data dimuat)
     setPriceRange([0, maxPrice]);
+    setLocalPriceRange([0, maxPrice]);
   }, [maxPrice]);
   
   useEffect(() => {
@@ -37,10 +40,9 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
       return typeMatch && brandMatch && priceMatch;
     });
     onFilterChange(filtered);
-  // Logika pemfilteran seharusnya hanya berjalan ulang ketika kriteria filter berubah.
-  // `onFilterChange` dan `allBags` dikecualikan untuk mencegah loop tak terbatas.
+  // Logika pemfilteran hanya berjalan ketika kriteria filter yang sebenarnya berubah.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTypes, selectedBrands, priceRange]);
+  }, [selectedTypes, selectedBrands, priceRange, allBags]);
 
 
   const handleTypeChange = (type: string) => {
@@ -59,6 +61,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
     setSelectedTypes([]);
     setSelectedBrands([]);
     setPriceRange([0, maxPrice]);
+    setLocalPriceRange([0, maxPrice]);
   };
 
   return (
@@ -111,12 +114,13 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
              <Slider
                 max={maxPrice}
                 step={10}
-                value={priceRange}
-                onValueChange={(value) => setPriceRange(value as [number, number])}
+                value={localPriceRange}
+                onValueChange={(value) => setLocalPriceRange(value as [number, number])}
+                onValueCommit={(value) => setPriceRange(value as [number, number])}
              />
              <div className="mt-2 flex justify-between text-sm text-muted-foreground">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
+                <span>${localPriceRange[0]}</span>
+                <span>${localPriceRange[1]}</span>
              </div>
         </div>
       </div>

@@ -41,7 +41,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
     });
     onFilterChange(filtered);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTypes, selectedBrands, priceRange]);
+  }, [selectedTypes, selectedBrands, priceRange, allBags]);
 
 
   const handleTypeChange = (type: string) => {

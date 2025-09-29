@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { Bag } from '@/lib/types';
 import BagCard from './BagCard';
 import FilterSidebar from './FilterSidebar';
@@ -22,15 +22,15 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
 
-  const handleFilterChange = (filters: {
-    selectedTypes: string[];
-    selectedBrands: string[];
-    priceRange: [number, number];
+  const handleFilterChange = useCallback((filters: {
+    selectedTypes?: string[];
+    selectedBrands?: string[];
+    priceRange?: [number, number];
   }) => {
-    setSelectedTypes(filters.selectedTypes);
-    setSelectedBrands(filters.selectedBrands);
-    setPriceRange(filters.priceRange);
-  };
+    if(filters.selectedTypes) setSelectedTypes(filters.selectedTypes);
+    if(filters.selectedBrands) setSelectedBrands(filters.selectedBrands);
+    if(filters.priceRange) setPriceRange(filters.priceRange);
+  }, []);
   
   const filteredBags = useMemo(() => {
     return bags.filter(bag => {
@@ -48,6 +48,9 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
         brands={allBrands}
         types={allTypes}
         maxPrice={maxPrice}
+        selectedTypes={selectedTypes}
+        selectedBrands={selectedBrands}
+        priceRange={priceRange}
       />
       <div className="flex-1">
         {filteredBags.length > 0 ? (

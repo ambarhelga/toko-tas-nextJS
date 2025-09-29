@@ -16,9 +16,20 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
   const allBrands = [...new Set(bags.map(b => b.brand))];
   const allTypes = [...new Set(bags.map(b => b.type))];
 
-  const handleFilterChange = useCallback((newBags: Bag[]) => {
-    setFilteredBags(newBags);
-  }, []);
+  const handleFilterChange = useCallback((newBags: {
+    selectedTypes: string[];
+    selectedBrands: string[];
+    priceRange: [number, number];
+  }) => {
+    const { selectedTypes, selectedBrands, priceRange } = newBags;
+    const filtered = bags.filter(bag => {
+        const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(bag.type);
+        const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(bag.brand);
+        const priceMatch = bag.price >= priceRange[0] && bag.price <= priceRange[1];
+        return typeMatch && brandMatch && priceMatch;
+    });
+    setFilteredBags(filtered);
+  }, [bags]);
 
   return (
     <div className="flex flex-col gap-8 md:flex-row">

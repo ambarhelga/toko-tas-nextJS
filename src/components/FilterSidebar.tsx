@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Bag } from '@/lib/types';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -9,7 +9,11 @@ import { Slider } from './ui/slider';
 
 interface FilterSidebarProps {
   allBags: Bag[];
-  onFilterChange: (filteredBags: Bag[]) => void;
+  onFilterChange: (filters: {
+    selectedTypes: string[];
+    selectedBrands: string[];
+    priceRange: [number, number];
+  }) => void;
   brands: string[];
   types: string[];
 }
@@ -17,58 +21,44 @@ interface FilterSidebarProps {
 const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebarProps) => {
   const maxPrice = useMemo(() => {
     if (allBags.length === 0) return 300;
-    return Math.ceil(Math.max(...allBags.map(b => b.price)))
+    return Math.ceil(Math.max(...allBags.map(b => b.price)));
   }, [allBags]);
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
-  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, maxPrice]);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // Initialize price states only when maxPrice actually changes after the initial mount
-    if (isMounted) {
-      setPriceRange([0, maxPrice]);
-      setLocalPriceRange([0, maxPrice]);
-    }
-  }, [maxPrice, isMounted]);
+    onFilterChange({
+      selectedTypes,
+      selectedBrands,
+      priceRange,
+    });
+  }, [selectedTypes, selectedBrands, priceRange, onFilterChange]);
   
   useEffect(() => {
-    if (!isMounted) return;
-
-    const filtered = allBags.filter(bag => {
-      const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(bag.type);
-      const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(bag.brand);
-      const priceMatch = bag.price >= priceRange[0] && bag.price <= priceRange[1];
-      return typeMatch && brandMatch && priceMatch;
-    });
-    onFilterChange(filtered);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTypes, selectedBrands, priceRange, isMounted]);
+    setPriceRange([0, maxPrice]);
+  }, [maxPrice]);
 
 
   const handleTypeChange = (type: string) => {
-    setSelectedTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-    );
+    const newSelectedTypes = selectedTypes.includes(type) 
+      ? selectedTypes.filter(t => t !== type) 
+      : [...selectedTypes, type];
+    setSelectedTypes(newSelectedTypes);
   };
 
   const handleBrandChange = (brand: string) => {
-    setSelectedBrands(prev =>
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
-    );
+    const newSelectedBrands = selectedBrands.includes(brand)
+      ? selectedBrands.filter(b => b !== brand)
+      : [...selectedBrands, brand];
+    setSelectedBrands(newSelectedBrands);
   };
-  
+
   const clearFilters = () => {
     setSelectedTypes([]);
     setSelectedBrands([]);
     setPriceRange([0, maxPrice]);
-    setLocalPriceRange([0, maxPrice]);
   };
 
   return (
@@ -107,7 +97,6 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
                   checked={selectedBrands.includes(brand)}
                   onCheckedChange={() => handleBrandChange(brand)}
                 />
-
                 <label htmlFor={`brand-${brand}`} className="text-sm font-medium leading-none">
                   {brand}
                 </label>
@@ -121,13 +110,12 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
              <Slider
                 max={maxPrice}
                 step={10}
-                value={localPriceRange}
-                onValueChange={(value) => setLocalPriceRange(value as [number, number])}
-                onValueCommit={(value) => setPriceRange(value as [number, number])}
+                value={priceRange}
+                onValueChange={(value) => setPriceRange(value as [number, number])}
              />
              <div className="mt-2 flex justify-between text-sm text-muted-foreground">
-                <span>${localPriceRange[0]}</span>
-                <span>${localPriceRange[1]}</span>
+                <span>${priceRange[0]}</span>
+                <span>${priceRange[1]}</span>
              </div>
         </div>
       </div>

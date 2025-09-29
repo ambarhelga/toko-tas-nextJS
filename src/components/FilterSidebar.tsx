@@ -1,7 +1,5 @@
-
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import { Slider } from './ui/slider';

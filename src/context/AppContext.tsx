@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -221,12 +221,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return wishlist.some((item) => item.id === bagId);
   };
   
-  const addToHistory = (bagId: string) => {
+  const addToHistory = useCallback((bagId: string) => {
     setBrowsingHistory(prev => {
         const newHistory = [bagId, ...prev.filter(id => id !== bagId)];
         return newHistory.slice(0, 10); // Keep last 10 viewed items
     });
-  };
+  }, []);
 
   if (!isMounted) {
     return null; // or a loading spinner

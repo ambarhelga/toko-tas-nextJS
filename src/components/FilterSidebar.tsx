@@ -6,7 +6,6 @@ import type { Bag } from '@/lib/types';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import { Slider } from './ui/slider';
-import { Label } from './ui/label';
 
 interface FilterSidebarProps {
   allBags: Bag[];
@@ -25,14 +24,23 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, maxPrice]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Initialize price states only when maxPrice actually changes from its initial calculation
-    setPriceRange([0, maxPrice]);
-    setLocalPriceRange([0, maxPrice]);
-  }, [maxPrice]);
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Initialize price states only when maxPrice actually changes after the initial mount
+    if (isMounted) {
+      setPriceRange([0, maxPrice]);
+      setLocalPriceRange([0, maxPrice]);
+    }
+  }, [maxPrice, isMounted]);
   
   useEffect(() => {
+    if (!isMounted) return;
+
     const filtered = allBags.filter(bag => {
       const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(bag.type);
       const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(bag.brand);
@@ -41,7 +49,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
     });
     onFilterChange(filtered);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTypes, selectedBrands, priceRange, allBags]);
+  }, [selectedTypes, selectedBrands, priceRange, isMounted]);
 
 
   const handleTypeChange = (type: string) => {

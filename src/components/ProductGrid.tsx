@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
@@ -18,28 +17,32 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
       return Math.ceil(Math.max(...bags.map(b => b.price)));
   }, [bags]);
 
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
+  const [filters, setFilters] = useState<{
+    selectedTypes: string[];
+    selectedBrands: string[];
+    priceRange: [number, number];
+  }>({
+    selectedTypes: [],
+    selectedBrands: [],
+    priceRange: [0, maxPrice],
+  });
 
-  const handleFilterChange = useCallback((filters: {
+  const handleFilterChange = useCallback((newFilters: {
     selectedTypes?: string[];
     selectedBrands?: string[];
     priceRange?: [number, number];
   }) => {
-    if(filters.selectedTypes) setSelectedTypes(filters.selectedTypes);
-    if(filters.selectedBrands) setSelectedBrands(filters.selectedBrands);
-    if(filters.priceRange) setPriceRange(filters.priceRange);
+    setFilters(prevFilters => ({...prevFilters, ...newFilters}));
   }, []);
   
   const filteredBags = useMemo(() => {
     return bags.filter(bag => {
-        const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(bag.type);
-        const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(bag.brand);
-        const priceMatch = bag.price >= priceRange[0] && bag.price <= priceRange[1];
+        const typeMatch = filters.selectedTypes.length === 0 || filters.selectedTypes.includes(bag.type);
+        const brandMatch = filters.selectedBrands.length === 0 || filters.selectedBrands.includes(bag.brand);
+        const priceMatch = bag.price >= filters.priceRange[0] && bag.price <= filters.priceRange[1];
         return typeMatch && brandMatch && priceMatch;
     });
-  }, [bags, selectedTypes, selectedBrands, priceRange]);
+  }, [bags, filters]);
 
   return (
     <div className="flex flex-col gap-8 md:flex-row">
@@ -48,9 +51,9 @@ const ProductGrid = ({ bags }: ProductGridProps) => {
         brands={allBrands}
         types={allTypes}
         maxPrice={maxPrice}
-        selectedTypes={selectedTypes}
-        selectedBrands={selectedBrands}
-        priceRange={priceRange}
+        selectedTypes={filters.selectedTypes}
+        selectedBrands={filters.selectedBrands}
+        priceRange={filters.priceRange}
       />
       <div className="flex-1">
         {filteredBags.length > 0 ? (

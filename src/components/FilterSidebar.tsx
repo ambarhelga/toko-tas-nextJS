@@ -1,62 +1,52 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import { Slider } from './ui/slider';
 
 interface FilterSidebarProps {
   onFilterChange: (filters: {
-    selectedTypes: string[];
-    selectedBrands: string[];
-    priceRange: [number, number];
+    selectedTypes?: string[];
+    selectedBrands?: string[];
+    priceRange?: [number, number];
   }) => void;
   brands: string[];
   types: string[];
   maxPrice: number;
+  selectedTypes: string[];
+  selectedBrands: string[];
+  priceRange: [number, number];
 }
 
-const FilterSidebar = ({ onFilterChange, brands, types, maxPrice }: FilterSidebarProps) => {
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [currentPriceRange, setCurrentPriceRange] = useState<[number, number]>([0, maxPrice]);
-
-  useEffect(() => {
-    setCurrentPriceRange([0, maxPrice]);
-  }, [maxPrice]);
-  
-  const handleFilterUpdate = useCallback(() => {
-      onFilterChange({
-          selectedTypes,
-          selectedBrands,
-          priceRange: currentPriceRange,
-      })
-  }, [selectedTypes, selectedBrands, currentPriceRange, onFilterChange]);
+const FilterSidebar = ({ onFilterChange, brands, types, maxPrice, selectedTypes, selectedBrands, priceRange }: FilterSidebarProps) => {
 
   const handleTypeChange = (type: string) => {
     const newSelectedTypes = selectedTypes.includes(type) 
       ? selectedTypes.filter(t => t !== type) 
       : [...selectedTypes, type];
-    setSelectedTypes(newSelectedTypes);
+    onFilterChange({ selectedTypes: newSelectedTypes });
   };
 
   const handleBrandChange = (brand: string) => {
     const newSelectedBrands = selectedBrands.includes(brand)
       ? selectedBrands.filter(b => b !== brand)
       : [...selectedBrands, brand];
-    setSelectedBrands(newSelectedBrands);
+    onFilterChange({ selectedBrands: newSelectedBrands });
   };
 
+  const handlePriceChange = (value: [number, number]) => {
+    onFilterChange({ priceRange: value });
+  }
+
   const clearFilters = () => {
-    setSelectedTypes([]);
-    setSelectedBrands([]);
-    setCurrentPriceRange([0, maxPrice]);
+    onFilterChange({
+        selectedTypes: [],
+        selectedBrands: [],
+        priceRange: [0, maxPrice]
+    });
   };
-  
-  useEffect(() => {
-      handleFilterUpdate();
-  }, [selectedTypes, selectedBrands, currentPriceRange, handleFilterUpdate]);
 
   return (
     <aside className="w-full md:w-64 lg:w-72">
@@ -107,12 +97,12 @@ const FilterSidebar = ({ onFilterChange, brands, types, maxPrice }: FilterSideba
              <Slider
                 max={maxPrice}
                 step={10}
-                value={currentPriceRange}
-                onValueChange={(value) => setCurrentPriceRange(value as [number, number])}
+                value={priceRange}
+                onValueChange={handlePriceChange}
              />
              <div className="mt-2 flex justify-between text-sm text-muted-foreground">
-                <span>${currentPriceRange[0]}</span>
-                <span>${currentPriceRange[1]}</span>
+                <span>${priceRange[0]}</span>
+                <span>${priceRange[1]}</span>
              </div>
         </div>
       </div>

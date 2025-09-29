@@ -27,7 +27,7 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, maxPrice]);
 
   useEffect(() => {
-    // Inisialisasi state harga ketika maxPrice berubah (misalnya saat data dimuat)
+    // Initialize price states only when maxPrice actually changes from its initial calculation
     setPriceRange([0, maxPrice]);
     setLocalPriceRange([0, maxPrice]);
   }, [maxPrice]);
@@ -40,7 +40,6 @@ const FilterSidebar = ({ allBags, onFilterChange, brands, types }: FilterSidebar
       return typeMatch && brandMatch && priceMatch;
     });
     onFilterChange(filtered);
-  // Logika pemfilteran hanya berjalan ketika kriteria filter yang sebenarnya berubah.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTypes, selectedBrands, priceRange, allBags]);
 

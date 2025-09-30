@@ -5,8 +5,8 @@ export interface Bag {
   description: string;
   imageUrl: string;
   imageHint: string;
-  type: 'Tote' | 'Crossbody' | 'Backpack' | 'Clutch' | 'Satchel' | 'Hobo';
-  brand: 'ChicVogue' | 'LuxeCarry' | 'UrbanTote' | 'Eleganté' | 'Les Catino';
+  type: 'Tote' | 'Crossbody' | 'Backpack' | 'Clutch' | 'Satchel' | 'Hobo' | 'Tote bag';
+  brand: 'ChicVogue' | 'LuxeCarry' | 'UrbanTote' | 'Eleganté' | 'Les Catino' | 'Under Armour';
 }
 
 export interface CartItem {

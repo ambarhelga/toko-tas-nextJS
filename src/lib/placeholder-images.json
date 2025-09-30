@@ -75,8 +75,14 @@
     {
       "id": "13",
       "description": "Adjustable & Detachable Straps Solid Coloring",
-      "imageUrl": "/images/tas-cokelat.png",
+      "imageUrl": "/image/tas-cokelat.png",
       "imageHint": "sling bag"
+    },
+    {
+      "id": "14",
+      "description": "Adjustable and detachable strap, Logo with mesh detail mini tote bag,  L30cm x H16cm x W8cm",
+      "imageUrl": "/image/under-armour.png",
+      "imageHint": "Studio Mini Crossbody Tote Bag"
     }
   ]
 }

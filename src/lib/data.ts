@@ -134,6 +134,16 @@ export const bags: Bag[] = [
     type: 'Satchel',
     brand: 'Les Catino',
   },
+  {
+    id: '14',
+    name: 'Under Armour',
+    price: 32.65,
+    description: '100% Polyester',
+    imageUrl: getImage('14').imageUrl,
+    imageHint: getImage('14').imageHint,
+    type: 'Tote bag',
+    brand: 'Under Armour',
+  },
 ];
 
 export const orders: Order[] = [

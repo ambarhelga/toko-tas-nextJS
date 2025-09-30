@@ -21,6 +21,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, Truck } from 'lucide-react';
 import Image from 'next/image';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   email: z.string().email(),

@@ -59,7 +59,7 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
+            <Link href="/cart" className="relative">
               <ShoppingBag />
               {cartItemCount > 0 && (
                 <span className="absolute right-0 top-0 flex h-5 w-5 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">

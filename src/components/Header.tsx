@@ -57,7 +57,7 @@ const Header = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart" className="relative">
               <ShoppingBag />

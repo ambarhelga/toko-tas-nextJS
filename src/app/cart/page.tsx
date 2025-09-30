@@ -15,7 +15,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 export default function CartPage() {
-  const { cart, updateQuantity, removeFromCart, cartTotal } = useAppContext();
+  const { cart, updateQuantity, removeFromCart, cartTotal, user } = useAppContext();
+  const checkoutHref = user ? '/checkout' : '/login';
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -115,7 +116,7 @@ export default function CartPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="lg" className="w-full">
-                  <Link href="/checkout">Proceed to Checkout</Link>
+                  <Link href={checkoutHref}>Proceed to Checkout</Link>
                 </Button>
               </CardFooter>
             </Card>

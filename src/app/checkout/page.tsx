@@ -60,13 +60,13 @@ export default function CheckoutPage() {
     const mockOrderId = 'ORD-' + Math.floor(Math.random() * 90000 + 10000);
     router.push(`/orders/${mockOrderId}`);
   };
-  
+
   if (cart.length === 0) {
-      // Redirect or show message if cart is empty
-      if (typeof window !== 'undefined') {
-        router.push('/cart');
-      }
-      return null;
+    // Redirect or show message if cart is empty
+    if (typeof window !== 'undefined') {
+      router.push('/cart');
+    }
+    return null;
   }
 
   return (
@@ -88,10 +88,10 @@ export default function CheckoutPage() {
                     <FormItem className="md:col-span-2"><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="address" render={({ field }) => (
-                     <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
-                   <FormField control={form.control} name="city" render={({ field }) => (
-                     <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormField control={form.control} name="city" render={({ field }) => (
+                    <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="postalCode" render={({ field }) => (
                     <FormItem><FormLabel>Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -107,22 +107,22 @@ export default function CheckoutPage() {
                   <CardTitle>Delivery Method</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <FormField control={form.control} name="deliveryOption" render={({ field }) => (
-                        <FormItem><FormControl>
-                            <RadioGroup onValuechange={field.onChange} defaultValue={field.value} className="space-y-2">
-                                <Label className="flex items-center gap-4 rounded-md border p-4 has-[input:checked]:border-primary">
-                                    <RadioGroupItem value="Standard" id="standard" />
-                                    <div className="flex items-center gap-2"><Truck className="h-5 w-5"/>Standard (5-7 days)</div>
-                                    <span className="ml-auto font-semibold">Free</span>
-                                </Label>
-                                <Label className="flex items-center gap-4 rounded-md border p-4 has-[input:checked]:border-primary">
-                                    <RadioGroupItem value="Express" id="express" />
-                                    <div className="flex items-center gap-2"><Truck className="h-5 w-5"/>Express (1-2 days)</div>
-                                    <span className="ml-auto font-semibold">$15.00</span>
-                                </Label>
-                            </RadioGroup>
-                        </FormControl></FormItem>
-                    )} />
+                  <FormField control={form.control} name="deliveryOption" render={({ field }) => (
+                    <FormItem><FormControl>
+                      <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="space-y-2">
+                        <Label className="flex items-center gap-4 rounded-md border p-4 has-[input:checked]:border-primary">
+                          <RadioGroupItem value="Standard" id="standard" />
+                          <div className="flex items-center gap-2"><Truck className="h-5 w-5" />Standard (5-7 days)</div>
+                          <span className="ml-auto font-semibold">Free</span>
+                        </Label>
+                        <Label className="flex items-center gap-4 rounded-md border p-4 has-[input:checked]:border-primary">
+                          <RadioGroupItem value="Express" id="express" />
+                          <div className="flex items-center gap-2"><Truck className="h-5 w-5" />Express (1-2 days)</div>
+                          <span className="ml-auto font-semibold">$15.00</span>
+                        </Label>
+                      </RadioGroup>
+                    </FormControl></FormItem>
+                  )} />
                 </CardContent>
               </Card>
 
@@ -131,18 +131,18 @@ export default function CheckoutPage() {
                   <CardTitle>Payment Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <FormField control={form.control} name="cardName" render={({ field }) => (
-                        <FormItem className="md:col-span-2"><FormLabel>Name on Card</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="cardNumber" render={({ field }) => (
-                        <FormItem className="md:col-span-2"><FormLabel>Card Number</FormLabel><FormControl><div className="relative"><CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"/><Input {...field} className="pl-10" placeholder="0000 0000 0000 0000"/></div></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="expiryDate" render={({ field }) => (
-                        <FormItem><FormLabel>Expiry Date</FormLabel><FormControl><Input {...field} placeholder="MM/YY"/></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="cvc" render={({ field }) => (
-                        <FormItem><FormLabel>CVC</FormLabel><FormControl><Input {...field} placeholder="123"/></FormControl><FormMessage /></FormItem>
-                    )}/>
+                  <FormField control={form.control} name="cardName" render={({ field }) => (
+                    <FormItem className="md:col-span-2"><FormLabel>Name on Card</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="cardNumber" render={({ field }) => (
+                    <FormItem className="md:col-span-2"><FormLabel>Card Number</FormLabel><FormControl><div className="relative"><CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" /><Input {...field} className="pl-10" placeholder="0000 0000 0000 0000" /></div></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="expiryDate" render={({ field }) => (
+                    <FormItem><FormLabel>Expiry Date</FormLabel><FormControl><Input {...field} placeholder="MM/YY" /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="cvc" render={({ field }) => (
+                    <FormItem><FormLabel>CVC</FormLabel><FormControl><Input {...field} placeholder="123" /></FormControl><FormMessage /></FormItem>
+                  )} />
                 </CardContent>
               </Card>
               <Button type="submit" size="lg" className="w-full">
@@ -159,18 +159,18 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 {cart.map(({ bag, quantity }) => (
                   <div key={bag.id} className="flex items-center gap-4">
-                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border"><Image src={bag.imageUrl} alt={bag.name} fill className="object-cover"/></div>
-                     <div className="flex-grow"><p className="font-semibold">{bag.name}</p><p className="text-sm text-muted-foreground">Qty: {quantity}</p></div>
-                     <p className="font-semibold">${(bag.price * quantity).toFixed(2)}</p>
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border"><Image src={bag.imageUrl} alt={bag.name} fill className="object-cover" /></div>
+                    <div className="flex-grow"><p className="font-semibold">{bag.name}</p><p className="text-sm text-muted-foreground">Qty: {quantity}</p></div>
+                    <p className="font-semibold">${(bag.price * quantity).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
-              <Separator className="my-4"/>
+              <Separator className="my-4" />
               <div className="space-y-2">
-                 <div className="flex justify-between"><span>Subtotal</span><span>${cartTotal.toFixed(2)}</span></div>
-                 <div className="flex justify-between"><span>Shipping</span><span>Free</span></div>
-                 <Separator className="my-2"/>
-                 <div className="flex justify-between font-bold text-lg"><span>Total</span><span>${cartTotal.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Subtotal</span><span>${cartTotal.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Shipping</span><span>Free</span></div>
+                <Separator className="my-2" />
+                <div className="flex justify-between font-bold text-lg"><span>Total</span><span>${cartTotal.toFixed(2)}</span></div>
               </div>
             </CardContent>
           </Card>

@@ -164,18 +164,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const addToCart = (bag: Bag) => {
+    let updatedCart: CartItem[] = [];
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.bag.id === bag.id);
       if (existingItem) {
-        return prevCart.map((item) =>
+        updatedCart = prevCart.map((item) =>
           item.bag.id === bag.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
+      } else {
+        updatedCart = [...prevCart, { bag, quantity: 1 }];
       }
-      return [...prevCart, { bag, quantity: 1 }];
+      
+      const totalItems = updatedCart.reduce((sum, item) => sum + item.quantity, 0);
+      toast({
+        title: "Ditambahkan ke keranjang",
+        description: `Anda sekarang memiliki ${totalItems} item di keranjang Anda.`,
+      });
+      
+      return updatedCart;
     });
-    toast({ title: "Added to cart", description: `${bag.name} is now in your cart.` });
   };
 
   const removeFromCart = (bagId: string) => {

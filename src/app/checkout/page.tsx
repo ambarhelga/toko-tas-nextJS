@@ -109,7 +109,7 @@ export default function CheckoutPage() {
                 <CardContent>
                     <FormField control={form.control} name="deliveryOption" render={({ field }) => (
                         <FormItem><FormControl>
-                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="space-y-2">
+                            <RadioGroup onValuechange={field.onChange} defaultValue={field.value} className="space-y-2">
                                 <Label className="flex items-center gap-4 rounded-md border p-4 has-[input:checked]:border-primary">
                                     <RadioGroupItem value="Standard" id="standard" />
                                     <div className="flex items-center gap-2"><Truck className="h-5 w-5"/>Standard (5-7 days)</div>

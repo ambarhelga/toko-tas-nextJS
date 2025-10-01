@@ -22,6 +22,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 
@@ -58,17 +59,20 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart" className="relative">
-              <ShoppingBag />
-              {cartItemCount > 0 && (
-                <span className="absolute right-0 top-0 flex h-5 w-5 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                  {cartItemCount}
-                </span>
-              )}
-              <span className="sr-only">Shopping Cart</span>
-            </Link>
-          </Button>
+           <div className="relative">
+             <Button variant="ghost" size="icon" asChild>
+                <Link href="/cart">
+                  <ShoppingBag />
+                  {cartItemCount > 0 && (
+                    <span className="absolute right-0 top-0 flex h-5 w-5 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                      {cartItemCount}
+                    </span>
+                  )}
+                  <span className="sr-only">Shopping Cart</span>
+                </Link>
+             </Button>
+           </div>
+
 
           {user ? (
             <DropdownMenu>
@@ -106,6 +110,7 @@ const Header = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetTitle className="sr-only">Menu</SheetTitle>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2">
                      <Sparkles className="h-6 w-6 text-primary" />

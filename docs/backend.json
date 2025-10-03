@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user within the BagTrendz application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Each user has a unique document ID.  This structure facilitates path-based ownership for security.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The database structure is designed to store user information including email, password, and name. Given the requirement for user authentication and personalized features like wishlists and order tracking, a user-centric structure is optimal. Each user has their own document under the `/users` collection, ensuring data isolation and simplified security rules based on user ID. This structure supports straightforward reads, writes, and updates to user-specific data.  This directly uses path-based ownership, which automatically guarantees authorization independence and avoids the need for denormalization or complex `get()` calls in the security rules.  Furthermore, QAPs are trivially satisfied as listing documents in `/users` is inherently protected via the user ID path segment and requires authentication."
+  }
+}

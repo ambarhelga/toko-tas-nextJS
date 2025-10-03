@@ -7,7 +7,7 @@ import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, type Auth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, type Auth } from 'firebase/auth';
 
 
 const firebaseConfig = {
@@ -36,6 +36,8 @@ interface AppContextType {
   login: (user: User) => void;
   logout: () => void;
   loginWithGoogle: () => void;
+  signInWithEmailAndPassword: (email: string, pass: string) => Promise<any>;
+  signUpWithEmailAndPassword: (email: string, pass: string, name: string) => Promise<any>;
   cart: CartItem[];
   addToCart: (bag: Bag) => void;
   removeFromCart: (bagId: string) => void;
@@ -65,7 +67,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!auth) return;
     // This effect runs only once on the client after the component mounts.
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
+      if (firebaseUser && firebaseUser.emailVerified) {
         const { uid, displayName, email } = firebaseUser;
         const appUser: User = {
           id: uid,
@@ -111,6 +113,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const login = (userData: User) => {
     setUser(userData);
   };
+  
+  const signUpWithEmailAndPassword = async (email: string, pass: string, name: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(userCredential.user, { displayName: name });
+      await sendEmailVerification(userCredential.user);
+      toast({
+        title: 'Akun Dibuat & Verifikasi Terkirim',
+        description: `Akun Anda telah dibuat. Silakan periksa email Anda untuk link verifikasi.`
+      });
+      return { success: true };
+    } catch (error: any) {
+      console.error("Firebase Auth Error:", error);
+      let errorMessage = 'Tidak dapat membuat akun. Silakan coba lagi.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'Email ini sudah digunakan. Silakan coba login.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Kata sandi terlalu lemah. Harap pilih kata sandi yang lebih kuat.';
+      }
+      toast({
+        title: 'Pendaftaran Gagal',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const signInWithEmailAndPassword = async (email: string, pass: string) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      if (userCredential.user.emailVerified) {
+        const { uid, displayName, email } = userCredential.user;
+        const appUser: User = { id: uid, name: displayName || 'User', email: email || '' };
+        setUser(appUser);
+        toast({ title: 'Login Berhasil', description: `Selamat datang kembali, ${appUser.name}!` });
+        return { success: true };
+      } else {
+        toast({
+          title: 'Verifikasi Email Diperlukan',
+          description: 'Silakan periksa email Anda dan klik link verifikasi sebelum login.',
+          variant: 'destructive',
+        });
+        await signOut(auth);
+        return { success: false, error: 'email-not-verified' };
+      }
+    } catch(error: any) {
+      let errorMessage = 'Email atau kata sandi tidak valid.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        errorMessage = 'Email atau kata sandi tidak valid.';
+      }
+      toast({
+        title: 'Login Gagal',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      return { success: false, error: error.message };
+    }
+  };
 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
@@ -127,26 +188,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
       setUser(appUser);
       toast({
-        title: 'Login Successful',
-        description: `Welcome back, ${appUser.name}!`,
+        title: 'Login Berhasil',
+        description: `Selamat datang kembali, ${appUser.name}!`,
       });
       router.push('/');
     } catch (error: any) {
       console.error("Firebase Auth Error Code:", error.code);
       console.error("Full Error:", error);
   
-      let errorMessage = 'Could not log in with Google. Please try again.';
+      let errorMessage = 'Tidak dapat login dengan Google. Silakan coba lagi.';
       
       if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for login. Check Firebase configuration.';
+        errorMessage = 'Domain ini tidak diizinkan untuk login. Periksa konfigurasi Firebase.';
       } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Login popup was blocked. Please allow popups for this site.';
+        errorMessage = 'Popup login diblokir. Harap izinkan popup untuk situs ini.';
       } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Login was canceled. Please complete the popup process to log in.';
+        errorMessage = 'Login dibatalkan. Harap selesaikan proses popup untuk login.';
       }
   
       toast({
-        title: 'Login Failed',
+        title: 'Login Gagal',
         description: errorMessage,
         variant: 'destructive',
       });
@@ -157,8 +218,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await signOut(auth);
     setUser(null);
     toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
+        title: 'Logout Berhasil',
+        description: 'Anda telah berhasil logout.',
     });
     router.push('/login');
   };
@@ -176,10 +237,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } else {
       updatedCart = [...cart, { bag, quantity: 1 }];
     }
-
+    
     setCart(updatedCart);
 
     const totalItems = updatedCart.reduce((sum, item) => sum + item.quantity, 0);
+    
     toast({
       title: "Ditambahkan ke keranjang",
       description: `Anda sekarang memiliki ${totalItems} item di keranjang Anda.`,
@@ -214,10 +276,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addToWishlist = (bag: Bag) => {
     if (isInWishlist(bag.id)) {
       removeFromWishlist(bag.id);
-      toast({ title: "Removed from wishlist", description: `${bag.name} has been removed from your wishlist.` });
+      toast({ title: "Dihapus dari daftar keinginan", description: `${bag.name} telah dihapus dari daftar keinginan Anda.` });
     } else {
       setWishlist((prev) => [...prev, bag]);
-      toast({ title: "Added to wishlist", description: `${bag.name} is now in your wishlist.` });
+      toast({ title: "Ditambahkan ke daftar keinginan", description: `${bag.name} sekarang ada di daftar keinginan Anda.` });
     }
   };
 
@@ -247,6 +309,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         loginWithGoogle,
+        signInWithEmailAndPassword,
+        signUpWithEmailAndPassword,
         cart,
         addToCart,
         removeFromCart,
@@ -265,3 +329,5 @@ export function AppProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    

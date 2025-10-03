@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import {
@@ -20,8 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useAppContext } from '@/hooks/useAppContext';
-import { useToast } from '@/hooks/use-toast';
-import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -29,10 +28,13 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-  const { login, loginWithGoogle } = useAppContext();
-  const { toast } = useToast();
+  const { signInWithEmailAndPassword, loginWithGoogle } = useAppContext();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const verificationSent = searchParams.get('verification') === 'sent';
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,19 +44,13 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Mock login
-    const user = {
-      id: '1',
-      name: 'Jane Doe',
-      email: values.email,
-    };
-    login(user);
-    toast({
-      title: 'Login Successful',
-      description: `Welcome back, ${user.name}!`,
-    });
-    router.push('/');
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    const result = await signInWithEmailAndPassword(values.email, values.password);
+    setIsSubmitting(false);
+    if (result.success) {
+      router.push('/');
+    }
   };
 
   const GoogleIcon = () => (
@@ -70,14 +66,22 @@ export default function LoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+          <CardTitle className="font-headline text-2xl">Selamat Datang Kembali</CardTitle>
+          <CardDescription>Masukkan kredensial Anda untuk mengakses akun Anda.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+             {verificationSent && (
+              <Alert variant="default" className="bg-green-100 border-green-400 text-green-700">
+                <AlertTitle>Verifikasi Terkirim!</AlertTitle>
+                <AlertDescription>
+                  Silakan periksa kotak masuk Anda untuk memverifikasi email Anda sebelum login.
+                </AlertDescription>
+              </Alert>
+            )}
             <Button variant="outline" className="w-full" onClick={loginWithGoogle}>
               <GoogleIcon />
-              Sign in with Google
+              Masuk dengan Google
             </Button>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -85,7 +89,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+                  Atau lanjutkan dengan
                 </span>
               </div>
             </div>
@@ -98,7 +102,7 @@ export default function LoginPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input placeholder="anda@contoh.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -109,7 +113,7 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Kata Sandi</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input type={showPassword ? 'text' : 'password'} {...field} />
@@ -128,8 +132,8 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
-                  Log In
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? 'Logging in...' : 'Login'}
                 </Button>
               </form>
             </Form>
@@ -137,9 +141,9 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex-col">
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Belum punya akun?{' '}
             <Link href="/signup" className="font-semibold text-primary hover:underline">
-              Sign up
+              Daftar
             </Link>
           </p>
         </CardFooter>
@@ -147,3 +151,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

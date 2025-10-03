@@ -21,21 +21,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useToast } from '@/hooks/use-toast';
-import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters.'),
-  email: z.string().email('Invalid email address.'),
+  name: z.string().min(2, 'Nama harus terdiri dari minimal 2 karakter.'),
+  email: z.string().email('Alamat email tidak valid.'),
   password: z.string()
-    .min(8, 'Password must be at least 8 characters.')
-    .regex(new RegExp(".*[@#&.$].*"), 'Password must contain at least one special character: @, #, &, ., $'),
+    .min(8, 'Kata sandi harus terdiri dari minimal 8 karakter.')
+    .regex(new RegExp(".*[@#&.$].*"), 'Kata sandi harus mengandung setidaknya satu karakter khusus: @, #, &, ., $'),
 });
 
 export default function SignUpPage() {
-    const { login, loginWithGoogle } = useAppContext();
-    const { toast } = useToast();
+    const { signUpWithEmailAndPassword, loginWithGoogle } = useAppContext();
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -46,19 +45,13 @@ export default function SignUpPage() {
         },
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        // Mock signup and login
-        const user = {
-            id: '1',
-            name: values.name,
-            email: values.email,
-        };
-        login(user);
-        toast({
-            title: 'Account Created',
-            description: `Welcome to BagTrendz, ${user.name}!`,
-        });
-        router.push('/');
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true);
+        const result = await signUpWithEmailAndPassword(values.email, values.password, values.name);
+        setIsSubmitting(false);
+        if (result.success) {
+            router.push('/login?verification=sent');
+        }
     };
     
     const GoogleIcon = () => (
@@ -74,14 +67,14 @@ export default function SignUpPage() {
     <div className="flex min-h-[80vh] items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
-          <CardDescription>Join BagTrendz to start your collection.</CardDescription>
+          <CardTitle className="font-headline text-2xl">Buat Akun</CardTitle>
+          <CardDescription>Bergabunglah dengan BagTrendz untuk memulai koleksi Anda.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <Button variant="outline" className="w-full" onClick={loginWithGoogle}>
                 <GoogleIcon />
-                Sign up with Google
+                Daftar dengan Google
             </Button>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -89,7 +82,7 @@ export default function SignUpPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with email
+                  Atau lanjutkan dengan email
                 </span>
               </div>
             </div>
@@ -100,7 +93,7 @@ export default function SignUpPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Nama</FormLabel>
                       <FormControl>
                         <Input placeholder="Jane Doe" {...field} />
                       </FormControl>
@@ -115,7 +108,7 @@ export default function SignUpPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input placeholder="anda@contoh.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -126,7 +119,7 @@ export default function SignUpPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Kata Sandi</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input type={showPassword ? 'text' : 'password'} {...field} />
@@ -145,8 +138,8 @@ export default function SignUpPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
-                  Create Account
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? 'Membuat Akun...' : 'Buat Akun'}
                 </Button>
               </form>
             </Form>
@@ -154,9 +147,9 @@ export default function SignUpPage() {
         </CardContent>
          <CardFooter className="flex-col">
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Sudah punya akun?{' '}
             <Link href="/login" className="font-semibold text-primary hover:underline">
-              Log in
+              Login
             </Link>
           </p>
         </CardFooter>
@@ -164,3 +157,5 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+    

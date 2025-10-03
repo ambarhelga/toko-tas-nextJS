@@ -144,25 +144,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const sendPasswordResetEmail = async (email: string) => {
     try {
-        await firebaseSendPasswordResetEmail(auth, email);
-        toast({
-            title: 'Email Pengaturan Ulang Terkirim',
-            description: 'Jika akun ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
-        });
-        return { success: true };
+      await firebaseSendPasswordResetEmail(auth, email);
+      // For security, always return success and show a generic message.
+      // This prevents email enumeration.
+      toast({
+          title: 'Email Pengaturan Ulang Terkirim',
+          description: 'Jika akun dengan email tersebut ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
+      });
+      return { success: true };
     } catch (error: any) {
-        let errorMessage = 'Tidak dapat mengirim email pengaturan ulang kata sandi.';
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email') {
-            // To prevent email enumeration, we show a generic success message even if the user is not found.
-            // The toast above handles this.
-             return { success: true };
-        }
-        toast({
-            title: 'Gagal Mengirim Email',
-            description: errorMessage,
-            variant: 'destructive',
-        });
-        return { success: false, error: errorMessage };
+      console.error("Password Reset Error:", error);
+      // Even if there's an error (like user not found), we show the same success toast
+      // to the user for security reasons. The actual error is logged for debugging.
+      toast({
+        title: 'Email Pengaturan Ulang Terkirim',
+        description: 'Jika akun dengan email tersebut ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
+      });
+      return { success: true };
     }
   };
 
@@ -355,3 +353,5 @@ export function AppProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    

@@ -18,7 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useAppContext } from '@/hooks/useAppContext';
-import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const formSchema = z.object({
@@ -27,7 +26,6 @@ const formSchema = z.object({
 
 export default function ForgotPasswordPage() {
   const { sendPasswordResetEmail } = useAppContext();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -41,10 +39,11 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     const result = await sendPasswordResetEmail(values.email);
+    setIsSubmitting(false);
     if (result.success) {
       setEmailSent(true);
+      form.reset();
     }
-    setIsSubmitting(false);
   };
 
   return (
@@ -57,9 +56,9 @@ export default function ForgotPasswordPage() {
         <CardContent>
           {emailSent ? (
             <Alert variant="default" className="bg-green-100 border-green-400 text-green-700">
-              <AlertTitle>Email Terkirim!</AlertTitle>
+              <AlertTitle>Periksa Email Anda!</AlertTitle>
               <AlertDescription>
-                Jika akun dengan email tersebut ada, kami telah mengirimkan tautan pengaturan ulang kata sandi. Silakan periksa kotak masuk Anda.
+                Jika akun dengan email tersebut ada, kami telah mengirimkan tautan pengaturan ulang kata sandi.
               </AlertDescription>
             </Alert>
           ) : (
@@ -97,3 +96,5 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+    

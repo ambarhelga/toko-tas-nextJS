@@ -7,7 +7,7 @@ import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, type Auth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail as firebaseSendPasswordResetEmail, type Auth } from 'firebase/auth';
 
 
 const firebaseConfig = {
@@ -38,6 +38,7 @@ interface AppContextType {
   loginWithGoogle: () => void;
   signInWithEmailAndPassword: (email: string, pass: string) => Promise<any>;
   signUpWithEmailAndPassword: (email: string, pass: string, name: string) => Promise<any>;
+  sendPasswordResetEmail: (email: string) => Promise<any>;
   cart: CartItem[];
   addToCart: (bag: Bag) => void;
   removeFromCart: (bagId: string) => void;
@@ -138,6 +139,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
         variant: 'destructive',
       });
       return { success: false, error: errorMessage };
+    }
+  };
+
+  const sendPasswordResetEmail = async (email: string) => {
+    try {
+        await firebaseSendPasswordResetEmail(auth, email);
+        toast({
+            title: 'Email Pengaturan Ulang Terkirim',
+            description: 'Jika akun ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
+        });
+        return { success: true };
+    } catch (error: any) {
+        let errorMessage = 'Tidak dapat mengirim email pengaturan ulang kata sandi.';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email') {
+            // To prevent email enumeration, we show a generic success message even if the user is not found.
+            // The toast above handles this.
+             return { success: true };
+        }
+        toast({
+            title: 'Gagal Mengirim Email',
+            description: errorMessage,
+            variant: 'destructive',
+        });
+        return { success: false, error: errorMessage };
     }
   };
 
@@ -311,6 +336,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         loginWithGoogle,
         signInWithEmailAndPassword,
         signUpWithEmailAndPassword,
+        sendPasswordResetEmail,
         cart,
         addToCart,
         removeFromCart,
@@ -329,5 +355,3 @@ export function AppProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    

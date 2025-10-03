@@ -113,7 +113,12 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Kata Sandi</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Kata Sandi</FormLabel>
+                        <Link href="/forgot-password" passHref className="text-sm text-primary hover:underline">
+                            Lupa Kata Sandi?
+                        </Link>
+                      </div>
                       <FormControl>
                         <div className="relative">
                           <Input type={showPassword ? 'text' : 'password'} {...field} />
@@ -151,5 +156,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

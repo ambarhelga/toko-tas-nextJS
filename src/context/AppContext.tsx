@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { Bag, CartItem, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -55,6 +55,8 @@ interface AppContextType {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const SESSION_TIMEOUT_DURATION = 60 * 60 * 1000; // 1 hour
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -63,10 +65,60 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<Bag[]>([]);
   const [browsingHistory, setBrowsingHistory] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const logoutTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const logout = useCallback(async () => {
+    if (auth) {
+        await signOut(auth);
+    }
+    setUser(null);
+    if(logoutTimer.current) {
+        clearTimeout(logoutTimer.current);
+    }
+    toast({
+        title: 'Logout Berhasil',
+        description: 'Anda telah berhasil logout.',
+    });
+    router.push('/login');
+  }, [router, toast]);
   
+  const resetLogoutTimer = useCallback(() => {
+    if (logoutTimer.current) {
+      clearTimeout(logoutTimer.current);
+    }
+    logoutTimer.current = setTimeout(() => {
+        if(user) {
+            toast({
+                title: 'Sesi berakhir',
+                description: 'Anda telah logout karena tidak aktif.'
+            })
+            logout();
+        }
+    }, SESSION_TIMEOUT_DURATION);
+  }, [logout, user, toast]);
+
+  useEffect(() => {
+    const activityEvents = ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'];
+    
+    if (user) {
+      resetLogoutTimer();
+      activityEvents.forEach(event => {
+        window.addEventListener(event, resetLogoutTimer);
+      });
+    }
+
+    return () => {
+      if (logoutTimer.current) {
+        clearTimeout(logoutTimer.current);
+      }
+      activityEvents.forEach(event => {
+        window.removeEventListener(event, resetLogoutTimer);
+      });
+    };
+  }, [user, resetLogoutTimer]);
+
   useEffect(() => {
     if (!auth) return;
-    // This effect runs only once on the client after the component mounts.
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser && firebaseUser.emailVerified) {
         const { uid, displayName, email } = firebaseUser;
@@ -145,8 +197,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const sendPasswordResetEmail = async (email: string) => {
     try {
       await firebaseSendPasswordResetEmail(auth, email);
-      // For security, always return success and show a generic message.
-      // This prevents email enumeration.
       toast({
           title: 'Email Pengaturan Ulang Terkirim',
           description: 'Jika akun dengan email tersebut ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
@@ -154,8 +204,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { success: true };
     } catch (error: any) {
       console.error("Password Reset Error:", error);
-      // Even if there's an error (like user not found), we show the same success toast
-      // to the user for security reasons. The actual error is logged for debugging.
       toast({
         title: 'Email Pengaturan Ulang Terkirim',
         description: 'Jika akun dengan email tersebut ada, kami telah mengirimkan tautan untuk mengatur ulang kata sandi Anda.',
@@ -235,16 +283,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         variant: 'destructive',
       });
     }
-  };
-
-  const logout = async () => {
-    await signOut(auth);
-    setUser(null);
-    toast({
-        title: 'Logout Berhasil',
-        description: 'Anda telah berhasil logout.',
-    });
-    router.push('/login');
   };
 
   const addToCart = (bag: Bag) => {
@@ -353,5 +391,3 @@ export function AppProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    
